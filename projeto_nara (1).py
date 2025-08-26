@@ -49,13 +49,8 @@ dados_cardio= np.array(array_cardio)
 
 #média, mediana e distância
 media_cardio= np.mean(dados_cardio)
-media_cardio
-
 mediana_cardio= np.median(dados_cardio)
-mediana_cardio
-
 distancia_cardio= (media_cardio - mediana_cardio) / mediana_cardio *100
-distancia_cardio
 
 #quartil
 q1_cardio= np.percentile(dados_cardio, 25)
@@ -79,13 +74,8 @@ dados_dermatologia= np.array(array_dermatologia)
 
 #média, mediana e distância
 media_dermatologia= np.mean(dados_dermatologia)
-media_dermatologia
-
 mediana_dermatologia= np.median(dados_dermatologia)
-mediana_dermatologia
-
 distancia_dermatologia= (media_dermatologia - mediana_dermatologia) / mediana_dermatologia *100
-distancia_dermatologia
 
 #quartil
 q1_dermatologia= np.percentile(dados_dermatologia, 25)
@@ -109,13 +99,8 @@ dados_ginecologia= np.array(array_ginecologia)
 
 #média, mediana e distância
 media_ginecologia= np.mean(dados_ginecologia)
-media_ginecologia
-
 mediana_ginecologia= np.median(dados_ginecologia)
-mediana_ginecologia
-
 distancia_ginecologia= (media_ginecologia - mediana_ginecologia) / mediana_ginecologia *100
-distancia_ginecologia
 
 #quartil
 q1_ginecologia= np.percentile(dados_ginecologia, 25)
@@ -139,13 +124,8 @@ dados_neurologia= np.array(array_neurologia)
 
 #média, mediana e distância
 media_neurologia= np.mean(dados_neurologia)
-media_neurologia
-
 mediana_neurologia= np.median(dados_neurologia)
-mediana_neurologia
-
 distancia_neurologia= (media_neurologia - mediana_neurologia) / mediana_neurologia *100
-distancia_neurologia
 
 #quartil
 q1_neurologia= np.percentile(dados_neurologia, 25)
@@ -169,13 +149,8 @@ dados_ortopedia= np.array(array_ortopedia)
 
 #média, mediana e distância
 media_ortopedia= np.mean(dados_ortopedia)
-media_ortopedia
-
 mediana_ortopedia= np.median(dados_ortopedia)
-mediana_ortopedia
-
 distancia_ortopedia= (media_ortopedia - mediana_ortopedia) / mediana_ortopedia *100
-distancia_ortopedia
 
 #quartil
 q1_ortopedia= np.percentile(dados_ortopedia, 25)
@@ -200,13 +175,8 @@ dados_pediatria= np.array(array_pediatria)
 
 #média, mediana e distância
 media_pediatria= np.mean(dados_pediatria)
-media_pediatria
-
 mediana_pediatria= np.median(dados_pediatria)
-mediana_pediatria
-
 distancia_pediatria= (media_pediatria - mediana_pediatria) / mediana_pediatria *100
-distancia_pediatria
 
 #quartil
 q1_pediatria= np.percentile(dados_pediatria, 25)
@@ -239,17 +209,17 @@ def buscar_medico(nome):
 buscar_medico("Dr(a). Ricardo Souza") #medico usado como exemplo
 
 #outliers do medico, consertar amanha
-def buscar_outliers(nome):
+def buscar_outliers_medico(nome):
     # Filtra os dados do médico
     df_filtro_unitario = df_med_merge.loc[df_med_merge['nome'] == nome]
 
     if df_filtro_unitario.empty:
         print(f"Médico '{nome}' não encontrado.")
         return
+    else: 
+        print(f"Médico '{nome}' encontrado.")
 
-    # Converte os valores para float 
-    df_filtro_unitario = df_filtro_unitario['tempo_espera_min'].astype(float)
-
+    # criando o array
     dados_med= np.array(df_filtro_unitario['tempo_espera_min'])
 
     # Calcula Q1, Q3 e IQR
@@ -261,7 +231,7 @@ def buscar_outliers(nome):
     limite_superior = q3 + (1.5 * iqr)
 
     # Filtra as linhas que são outliers
-    outliers = df_filtro_unitario[(df_filtro_unitario['tempo_espera_min'] < limite_inferior) | (df_filtro_unitario['tempo_espera_min'] > limite_superior)]
+    outliers = df_filtro_unitario[(df_filtro_unitario['tempo_espera_min'] < limite_inferior) |(df_filtro_unitario['tempo_espera_min'] > limite_superior)]
 
     # Retorna os resultados
     if outliers.empty:
@@ -270,6 +240,7 @@ def buscar_outliers(nome):
         print(f"Outliers encontrados para o médico '{nome}':")
         print(outliers.to_string(index=False))
 
+buscar_outliers_medico("Dr(a). Ricardo Souza") #medico usado como exemplo
 
 # Média e mediana por clínica _______________________________________________________________________________________
 # Pd merge para juntar o df de medico e de tempo
@@ -287,44 +258,56 @@ def buscar_clinica(nome):
     resultado = df_distancia_cli.loc[df_distancia_cli['nome'] == nome ]
     print(resultado)
 
-buscar_clinica("Dr(a). Ricardo Souza") #medico usado como exemplo
+buscar_clinica("Bem Viver") #clinica usado como exemplo
 
-#Função para mostrar os outliers do médico
+#Função para mostrar os outliers da clinica
 def buscar_outliers_clinica(nome):
-    # Filtra os dados do médico
-    df_filtro_unitario = df_cli_merge[df_med_merge['nome'] == nome]
+
+    # Filtra os dados da clinica
+    df_filtro_unitario = df_cli_merge[df_cli_merge['nome'] == nome]
 
     if df_filtro_unitario.empty:
         print(f"Médico '{nome}' não encontrado.")
         return
+    
+    # criando o array
+    dados_clinica= np.array(df_filtro_unitario['tempo_espera_min'])
 
-    # Converte os valores para float 
-    dados = df_filtro_unitario['tempo_espera_min'].astype(float)
     # Q1, Q3 e IQR
-    q1 = dados.quantile(0.25)
-    q3 = dados.quantile(0.75)
+    q1 = np.percentile(dados_clinica,25) 
+    q3 = np.percentile(dados_clinica,75)
     iqr = q3 - q1
 
     limite_inferior = q1 - 1.5 * iqr
     limite_superior = q3 + 1.5 * iqr
 
     # Filtra as linhas que são outliers
-    outliers = df_filtro_unitario[(df_filtro_unitario['tempo_espera_min'] < limite_inferior) | (df_filtro_unitario['tempo_espera_min'] > limite_superior)]
+    outliers = df_filtro_unitario[(df_filtro_unitario['tempo_espera_min'] < limite_inferior) |(df_filtro_unitario['tempo_espera_min'] > limite_superior)]
 
     # resultado
     if outliers.empty:
-        print(f"Nenhum outlier encontrado para o médico '{nome}'.")
+        print(f"Nenhum outlier encontrado para a clinica '{nome}'.")
     else:
-        print(f"Outliers encontrados para o médico '{nome}':")
+        print(f"Outliers encontrados para a clinica '{nome}':")
         print(outliers.to_string(index=False))
 
-#correlacao entre tempo de espera e satisfacao
+buscar_outliers_clinica("Bem Viver") #clinica usada como exemplo
+
+#correlacao entre tempo de espera e satisfacao _____________________________________________________________________
 df_tempo_espera = df_realizadas.groupby('id_consulta')['tempo_espera_min'].sum().reset_index()
 df_tempo_espera = df_realizadas.sort_values(by='tempo_espera_min', ascending= False)
 df_nota_satisfacao = df_avali.groupby('id_consulta')['nota_satisfacao'].sum().reset_index()
 df_nota_satisfacao = df_nota_satisfacao.sort_values(by='nota_satisfacao', ascending= True)
 
-
-#fazer um pd merge inner 
+#fazer um pd merge inner para juntar as tabelas
 tempo_espera_satisfacao = pd.merge(df_tempo_espera, df_nota_satisfacao, on = 'id_consulta', how= 'inner')
+
+# Gráfico de dispersão
+plt.figure(figsize=(8, 6))
+plt.scatter(tempo_espera_satisfacao['tempo_espera_min'], tempo_espera_satisfacao['nota_satisfacao'], color='blue')
+plt.title('Correlação entre tempo de espera e nota de satisfação')
+plt.xlabel('tempo_espera_min')
+plt.ylabel('nota_satisfacao')
+
+
 
